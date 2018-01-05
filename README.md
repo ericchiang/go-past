@@ -13,7 +13,7 @@ This package may change in the future, hasn't been audited, isn't thoroughly tes
 
 ## PAST
 
-PAST is a JWT alternative for authenticating, signing, and encrypting payloads into URL frendly tokens. As opposed to JWTs which require parsing a complex header to determine the signature algorithm, PAST token headers hold a version and an operation. For example the following token uses PAST `v2` to authenticate (`auth`) a message.
+PAST is a JWT alternative for authenticating, signing, and encrypting payloads into URL frendly tokens. As opposed to JWTs which require parsing a complex header to determine the signature algorithm, PAST token headers only hold a version and an operation. For example the following token uses PAST `v2` to authenticate (`auth`) a message.
 
 ```
 v2.auth.ewogICJkYXRhIjogInRoaXMgaXMgYW4gYXV0aGVudGljYXRlZCBtZXNzYWdlIiwKICAiZXhwIjogIjIwMzktMDEtMDFUMDA6MDA6MDAiCn3OF39sdzCcOyUiVSSQwRfGoauVG5Xt9eZc45k31wdxjA
@@ -82,15 +82,18 @@ The package also supports signing with an asymmetric key and encrypted authentic
 
 This implementation is missing the following features:
 
-* `v1.sign` (RSASSA-PSS) - PAST requires specifying the mask length, which Go doesn't expose directory.
-* `v2.enc` (XChaCha20-Poly1305) - No XChaCha20 implementation in golang.org/x/crypto (only straight ChaCha20).
-* Footer data.
+* `v1.sign` (RSASSA-PSS) - PAST requires specifying the mask length, which Go doesn't expose directly
+* `v2.enc` (XChaCha20-Poly1305) - no XChaCha20 implementation in golang.org/x/crypto (only straight ChaCha20)
+* Footer data
 
-## User experience report
+## Implementer experience report
 
-Currently, PAST is more of a documented PHP library than a specification. Many of the implementation details require reading the source code, while certain aspects are extremely PHP specific (for example the [PED encoding][ped] just describes performing PHP's [`pack('P', n)`][pack]).
+Currently, PAST is more of a documented PHP library than a specification. Many of the implementation details require reading the source code, while certain aspects are extremely PHP specific (for example the [pre-authentication encoding (PAE)][pae] just describes performing PHP's [`pack('P', n)`][pack]). Also, aspects of PAST sometime seem more complex than they need to be. `v1.enc`'s use of HKDF to derive keys and the pre-authentication encoding seralization are good examples of this.
+
+Though PAST is more straight forward than a JWT, cookbooks like [`gtank/cryptopasta`][cryptopasta] might also be of interest for users looking for simpler strategies.
 
 [past]: https://github.com/paragonie/past
 [hacker-news]: https://news.ycombinator.com/item?id=16070394
-[ped]: https://github.com/paragonie/past/blob/v0.2.0/docs/01-Protocol-Versions/Common.md#pae-definition
+[pae]: https://github.com/paragonie/past/blob/v0.2.0/docs/01-Protocol-Versions/Common.md#pae-definition
 [pack]: https://secure.php.net/manual/en/function.pack.php
+[cryptopasta]: https://github.com/gtank/cryptopasta
