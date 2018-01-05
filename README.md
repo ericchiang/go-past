@@ -88,11 +88,12 @@ This implementation is missing the following features:
 
 ## Implementer experience report
 
-Currently, PAST is more of a documented PHP library than a specification. Many of the implementation details require reading the source code, while certain aspects are extremely PHP specific (for example the [pre-authentication encoding (PAE)][pae] just describes performing PHP's [`pack('P', n)`][pack]).
+Currently, PAST is more of a [documented PHP library than a specification][past-9]. Many of the implementation details require reading the source code, while certain aspects are extremely PHP specific (for example the [pre-authentication encoding (PAE)][pae] just describes performing PHP's [`pack('P', n)`][pack]).
 
 Aspects of PAST can be complex at times. `v1.enc`'s use of HKDF to derive keys and the pre-authentication encoding seralization are good examples of this. Though PAST is more straight forward than a JWT, cookbooks like [`gtank/cryptopasta`][cryptopasta] might also be of interest for users looking for simpler strategies.
 
 [past]: https://github.com/paragonie/past
+[past-9]: https://github.com/paragonie/past/issues/9#issuecomment-355487843
 [hacker-news]: https://news.ycombinator.com/item?id=16070394
 [pae]: https://github.com/paragonie/past/blob/v0.2.0/docs/01-Protocol-Versions/Common.md#pae-definition
 [pack]: https://secure.php.net/manual/en/function.pack.php
