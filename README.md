@@ -1,6 +1,7 @@
 # go-past
 
 [![GoDoc](https://godoc.org/github.com/ericchiang/go-past/past?status.svg)](https://godoc.org/github.com/ericchiang/go-past/past)
+[![Build Status](https://travis-ci.org/ericchiang/go-past.svg?branch=master)](https://travis-ci.org/ericchiang/go-past)
 
 A Go implementation of [Platform-Agnostic Security Tokens (PAST)][past], [_"a secure alternative to JWT."_][hacker-news]
 
