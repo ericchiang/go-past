@@ -134,7 +134,7 @@ func (v version2) EncVerify(key []byte, token string) ([]byte, error) {
 	return nil, errors.New("past: v2 encryption not supported")
 }
 
-// NewV2SignKey returns a signing key used for V1 signatures.
+// NewV1SignKey returns a signing key used for V1 signatures.
 func NewV1SignKey() (*rsa.PrivateKey, error) {
 	return rsa.GenerateKey(rand.Reader, 2048)
 }
