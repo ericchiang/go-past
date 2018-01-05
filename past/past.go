@@ -70,14 +70,14 @@ func (v *Version) AuthVerify(key []byte, token string) ([]byte, error) {
 	return v.v.AuthVerify(key, token)
 }
 
-// Encrypt returns a token that encrypts and authenticates the payload.
-func (v *Version) Encrypt(key, payload []byte) (string, error) {
-	return v.v.Encrypt(key, payload)
+// Enc returns a token that encrypts and authenticates the payload.
+func (v *Version) Enc(key, payload []byte) (string, error) {
+	return v.v.Enc(key, payload)
 }
 
-// Decrypt decrypts and authenticates a token and returns the payload.
-func (v *Version) Decrypt(key []byte, token string) ([]byte, error) {
-	return v.v.Decrypt(key, token)
+// EncVerify decrypts and authenticates a token and returns the payload.
+func (v *Version) EncVerify(key []byte, token string) ([]byte, error) {
+	return v.v.EncVerify(key, token)
 }
 
 // Sign creates a signed token from the key and payload.
@@ -96,11 +96,11 @@ type version interface {
 	// AuthVerify verifies the token's authentication tag and returns the payload.
 	AuthVerify(key []byte, token string) ([]byte, error)
 
-	// Encrypt returns a token that encrypts and authenticates the payload.
-	Encrypt(key, payload []byte) (string, error)
-	// Decrypt decrypts and verifies the authentication tag of a token and returns
+	// Enc returns a token that encrypts and authenticates the payload.
+	Enc(key, payload []byte) (string, error)
+	// EncVerify decrypts and verifies the authentication tag of a token and returns
 	// the payload.
-	Decrypt(key []byte, token string) ([]byte, error)
+	EncVerify(key []byte, token string) ([]byte, error)
 
 	// Sign creates a signed token from the key and payload.
 	Sign(key crypto.Signer, payload []byte) (string, error)
@@ -119,18 +119,18 @@ func parseToken(token, tokenType string, tagLen int) (payload, tag []byte, ok bo
 	if len(data) < tagLen {
 		return nil, nil, false
 	}
-	return data[len(data)-tagLen:], data[:len(data)-tagLen], true
+	return data[:len(data)-tagLen], data[len(data)-tagLen:], true
 }
 
 func (v version2) NewEncKey() ([]byte, error) {
 	return nil, errors.New("past: v2 encryption not supported")
 }
 
-func (v version2) Encrypt(key, payload []byte) (string, error) {
+func (v version2) Enc(key, payload []byte) (string, error) {
 	return "", errors.New("past: v2 encryption not supported")
 }
 
-func (v version2) Decrypt(key []byte, token string) ([]byte, error) {
+func (v version2) EncVerify(key []byte, token string) ([]byte, error) {
 	return nil, errors.New("past: v2 encryption not supported")
 }
 
@@ -189,7 +189,7 @@ func newRandBytes(n int) ([]byte, error) {
 	return key, nil
 }
 
-const v2MacLength = 256
+const v2MacLength = 32
 
 func computeV2Mac(key, payload, footer []byte) []byte {
 	h := hmac.New(sha512.New, key)
@@ -221,7 +221,7 @@ func (v version2) AuthVerify(key []byte, token string) ([]byte, error) {
 
 type version1 struct{}
 
-func (v version1) Encrypt(key, payload []byte) (string, error) {
+func (v version1) Enc(key, payload []byte) (string, error) {
 	nonce, err := newRandBytes(32)
 	if err != nil {
 		return "", err
@@ -248,7 +248,7 @@ func (v version1) Encrypt(key, payload []byte) (string, error) {
 	return tokenTypeV1Enc + enc.EncodeToString(data), nil
 }
 
-func (v version1) Decrypt(key []byte, token string) ([]byte, error) {
+func (v version1) EncVerify(key []byte, token string) ([]byte, error) {
 	payload, tag, ok := parseToken(token, tokenTypeV1Enc, sha512.Size384)
 	if !ok || len(payload) < 32 {
 		return nil, errors.New("past: malformed encrypted token")
